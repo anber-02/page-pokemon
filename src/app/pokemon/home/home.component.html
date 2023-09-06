@@ -1,10 +1,41 @@
+<main class="main">
+  <div #container__pokemons class="container" 
+  infiniteScroll
+  (scrolled)="onScrollDown()"
+  >
+    <div class="card" [ngStyle]="{'background-color' : getColorRGBA(poke.species?.color?.name, .6) }"
+      *ngFor="let poke of pokemon$ | async" (click)="modalService.open(poke.pokemon.name)">
+      <span>N.º {{poke.pokemon.id}}</span>
 
-<div class="container">
-    <div class="card bg-dark" *ngFor="let poke of pokemons">
-      <div class="card-body">
-        <h4 class="card-title">{{poke.pokemon.name}}</h4>
-        <button [routerLink]="['/pokemon',poke.pokemon.name]" class="card-text" class="btn btn-primary">Ver mas...</button>
+      <div class="card__body">
+        <h3 class="">{{poke.pokemon.name}}</h3>
+        <div class="tag">
+          <span *ngFor="let types of poke.pokemon.types">
+            {{types.type.name}}
+          </span>
+        </div>
       </div>
+
+      <figure class="card__image">
+        <img src="{{poke.pokemon.image}}" />
+      </figure>
+      <!-- Info a mostrar en la modal -->
+      <app-modal id="{{poke.pokemon.name}}">
+        <app-card-detail [pokemon]="poke"></app-card-detail>
+      </app-modal>
+      <!-- <button (click)="modalService.close();">Close</button> -->
     </div>
+
+    <div #limitPage id="limitPage"></div>
   </div>
-  
+
+  <button *ngIf="showButton" class="button-fab" (click)="onScrollTop()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 16 16">
+      <path fill="currentColor"
+        d="m1 7.4l.7.7l6-6l6 6l.7-.7L8.1 1h-.7L1 7.4zm0 6l.7.7l6-6l6 6l.7-.7L8.1 7h-.7L1 13.4z" />
+    </svg>
+  </button>
+
+
+</main>
+<!-- <button [routerLink]="['/pokemon',poke.pokemon.name]" class="card-text" class="btn btn-primary">Ver mas...</button> -->

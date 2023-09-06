@@ -1,0 +1,14 @@
+.detail__pokemon{
+  position: relative;
+  display: grid;
+  grid-template-columns: 2;
+  width: 80%;
+}
+.pokemon__id{
+  position: absolute;
+  top:4px;
+  right: 6px;
+  font-size: 12px;
+  color: rgb(216, 209, 209);
+  font-weight: 600;
+}

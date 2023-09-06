@@ -1,0 +1,91 @@
+.main{
+  margin: 2px 8px;
+}
+.container{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap:12px;
+  row-gap: 8px;
+  position: relative;
+}
+.card {
+  background-color:#023E8A50 ;
+  padding: 4px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+  justify-content: center;
+}
+.card:hover{
+  transform: scale(1.01);
+  opacity: .8;
+}
+.card:hover .card__image{
+  transform: scale(1.1);
+}
+.card >span{
+  position: absolute;
+  top:4px;
+  right: 6px;
+  font-size: 12px;
+  color: rgb(216, 209, 209);
+  font-weight: 600;
+}
+
+
+.card__body{
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap:10px;
+}
+.card__body h3{
+  color: white;
+  font-size: 20px;
+  line-height: 18px;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.card__image{
+}
+.card__image > img{
+  object-fit: contain;
+}
+
+.tag{
+  display: flex;
+  flex-direction: column;
+  gap:4px;
+}
+.tag span {
+  background-color: rgb(255, 255, 255, .3);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 12px;
+  text-transform: capitalize;
+  text-align: center;
+}
+
+.button-fab{
+  font-family: var(--poppins);
+  background-color: white;
+  border-radius: 100%;
+  height: 50px;
+  width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  bottom: 10px;
+  right: 20px;
+  /* z-index: ; */
+  cursor: pointer;
+}
+.button-fab:hover{
+  transform: scale(1.2);
+  background-color: rgba(216, 216, 216, 0.752);
+}
