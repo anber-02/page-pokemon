@@ -8,6 +8,7 @@ import { ModalComponent } from '../components/modal/modal.component';
 import { CardDetailComponent } from '../components/card-detail/card-detail.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { SpinnerComponent } from '../components/spinner/spinner.component';
+import { SpinnerModule } from '../components/spinner/spinner.module';
 
 
 
@@ -18,7 +19,8 @@ import { SpinnerComponent } from '../components/spinner/spinner.component';
     CommonModule,
     HttpClientModule,
     RouterModule,
-    InfiniteScrollModule
+    InfiniteScrollModule,
+    SpinnerModule
   ]
 })
 export class PokemonModule { }

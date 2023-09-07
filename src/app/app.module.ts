@@ -22,7 +22,6 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
     PokemonModule,
     routing,
     RouterModule,
-    SpinnerModule
   ],
   // multi indica que se pueden utilizar varios interceptors
   providers: [

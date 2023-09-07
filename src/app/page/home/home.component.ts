@@ -3,6 +3,7 @@ import { PokemonService } from '../../services/pokemon.service';
 import { DOCUMENT } from '@angular/common';
 import { ModalService } from 'src/app/services/modal.service';
 import { isEmpty } from 'rxjs';
+import { SpinnerService } from 'src/app/services/spinner.service';
 
 @Component({
   selector: 'app-home',
@@ -16,11 +17,12 @@ export class HomeComponent implements OnInit {
   showButton = false;
   pokemosOffset = 20;
   haBuscado = false
-
+  isLoading = this.spinnerService.isLoading$
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private pokemonService: PokemonService,
-    protected modalService: ModalService
+    protected modalService: ModalService,
+    protected spinnerService: SpinnerService
   ) { }
   // datos de los Pokemon's
   pokemons$ = this.pokemonService.pokemons$;
