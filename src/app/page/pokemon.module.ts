@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { ModalComponent } from '../components/modal/modal.component';
 import { CardDetailComponent } from '../components/card-detail/card-detail.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { SpinnerComponent } from '../components/spinner/spinner.component';
 
 
 

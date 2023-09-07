@@ -163,5 +163,54 @@ export class PokemonService {
     );
   }
 
+  // Obtener información del Pokémon y sus evoluciones
+  // getPokemonAndEvolutions(pokemonName: string): Observable<any> {
+  //   // Obtener información del Pokémon principal
+  //   return this.http.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`).pipe(
+  //     mergeMap((pokemonData: any) => {
+  //       // Obtener información de las especies del Pokémon
+  //       return this.http.get(pokemonData.species.url).pipe(
+  //         mergeMap((speciesData: any) => {
+  //           // Obtener información de las cadenas de evolución
+  //           return this.http.get(speciesData.evolution_chain.url);
+  //         }),
+  //         mergeMap((evolutionChain: any) => {
+  //           // Recorrer la cadena de evolución y obtener detalles de cada etapa
+  //           const evolutionStages = [];
+  //           let currentEvol = evolutionChain.chain;
+
+  //           while (currentEvol) {
+  //             evolutionStages.push({
+  //               name: currentEvol.species.name,
+  //               trigger: currentEvol.evolution_details[0]?.trigger?.name,
+  //             });
+  //             currentEvol = currentEvol.evolves_to[0]; // Siguiente etapa de evolución
+  //           }
+
+  //           // Obtener detalles de cada etapa de evolución
+  //           const evolutionRequests = evolutionStages.map((stage) => {
+  //             return this.http.get(`https://pokeapi.co/api/v2/pokemon/${stage.name}`);
+  //           });
+
+  //           // Usar forkJoin para obtener detalles de todas las etapas de evolución
+  //           return forkJoin(evolutionRequests).pipe(
+  //             // Mapear los resultados en un objeto con la información del Pokémon y sus evoluciones
+  //             switchMap((evolutionPokemonData: any[]) => {
+  //               const result = {
+  //                 pokemon: pokemonData,
+  //                 evolutions: evolutionStages.map((stage, index) => ({
+  //                   name: stage.name,
+  //                   trigger: stage.trigger,
+  //                   details: evolutionPokemonData[index],
+  //                 })),
+  //               };
+  //               return of(result);
+  //             })
+  //           );
+  //         })
+  //       );
+  //     })
+  //   );
+  // }
   // get
 }

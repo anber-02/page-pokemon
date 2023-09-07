@@ -3,10 +3,13 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { PokemonModule } from './pokemon/pokemon.module';
+import { PokemonModule } from './page/pokemon.module';
 import { routing } from './app.routes';
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { SpinnerModule } from './components/spinner/spinner.module';
+import { SpinnerInterceptor } from './interceptors/spinner.interceptor';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -19,8 +22,12 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     PokemonModule,
     routing,
     RouterModule,
+    SpinnerModule
   ],
-  providers: [],
+  // multi indica que se pueden utilizar varios interceptors
+  providers: [
+    {provide:HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi:true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
