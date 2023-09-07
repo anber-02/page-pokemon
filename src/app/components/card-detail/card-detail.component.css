@@ -1,14 +1,102 @@
-.detail__pokemon{
+.detail__pokemon {
   position: relative;
-  display: grid;
-  grid-template-columns: 2;
-  width: 80%;
+  display: flex;
+  width: 100%;
+  min-height: 300px;
+  height: 100%;
+  /* background: linear-gradient(90deg, #00194a 25%, #011a4c 100%); */
+  background: linear-gradient(90deg, #00194a 25%, #012e86 100%);
+  /* align-items: stretch; */
 }
-.pokemon__id{
+
+.pokemon__image {
+  position: relative;
+  border-right: 1px solid rgb(199, 199, 199);
+  display: flex;
+  justify-content: center;
+  width: 50%;
+  min-height: 300px;
+  height: 100%;
+  align-self: center;
+}
+.background_image {
   position: absolute;
-  top:4px;
-  right: 6px;
-  font-size: 12px;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  clip-path: polygon(0 0, 77% 0, 25% 100%, 0% 100%);
+}
+.pokemon__image figure {
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+.pokemon__image img {
+  width: 70%;
+  object-fit: contain;
+}
+
+.pokemon__data {
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50%;
+  color: white;
+}
+.pokemon__id {
+  font-size: 16px;
   color: rgb(216, 209, 209);
   font-weight: 600;
+}
+.pokemon__data h3 {
+  font-size: 36px;
+  text-transform: capitalize;
+}
+.pokemon__data .tag {
+  display: flex;
+  gap: 4px;
+}
+.pokemon__data .tag span {
+  background-color: rgb(255, 255, 255, 0.3);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 12px;
+  text-transform: capitalize;
+  text-align: center;
+}
+
+@media (width <= 500px) {
+  .detail__pokemon {
+    flex-direction: column;
+  }
+  .pokemon__image {
+    width: 100%;
+    height: 50%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  .pokemon__image figure {
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+  .pokemon__image img {
+    width: 100%;
+    object-fit: cover;
+  }
+  .pokemon__data {
+    width: 100%;
+    height: 50%;
+  }
+  .pokemon__image img {
+    width: 50%;
+    object-fit: contain;
+  }
+  .background_image {
+    display: none;
+  }
 }

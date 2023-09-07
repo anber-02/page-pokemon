@@ -7,11 +7,14 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class CardDetailComponent implements OnInit {
 
-  @Input() pokemon : any;
-
-  constructor() { }
-
+  @Input() pokemon: any;
+  description:string = '' 
+  constructor() {
+  }
+  
   ngOnInit(): void {
+    let data = this.pokemon.species.flavor_text_entries.find((entry: any) => entry.language.name === 'es');
+    this.description = data.flavor_text
   }
 
 }

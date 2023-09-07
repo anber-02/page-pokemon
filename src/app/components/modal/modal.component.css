@@ -1,35 +1,38 @@
-  .modal {
-      /* modal container fixed across whole screen */
-      position: fixed;
-      inset: 0;
-      
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background-color: rgba(0, 0, 0, 0.75);
+  padding: 40px;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-      /* z-index must be higher than everything else on the page */
-      z-index: 10000;
-      
-      /* semi-transparent black background exposed by padding */
-      background-color: rgba(0, 0, 0, .75);
-      padding: 40px;
-
-      /* enables scrolling for tall modals */
-      overflow: auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-  }
-
-  .modal__body {
-      padding: 20px;
-      background: #fff;
-      width: auto;
-      height: auto;
-  }
-
+.modal__body {
+  width: 80%;
+  height: 80%;
+  border-radius: 10px;
+  box-shadow: 1px 1px 8px rgba(255, 255, 0, 0.457);
+  overflow: hidden;
+  position: relative;
+}
 
 body.jw-modal-open {
-  /* body overflow is hidden to hide main scrollbar when modal window is open */
   overflow: hidden;
 }
-.jw-modal-open{
+.jw-modal-open {
   display: block;
+}
+
+@media (width <= 500px) {
+  .modal__body {
+    box-shadow: none;
+    width: 100%;
+    height: 90%;
+  }
+  .modal {
+    padding: 10px;
+  }
 }

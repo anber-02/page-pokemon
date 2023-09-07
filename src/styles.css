@@ -21,6 +21,7 @@ html{
 body{
   font-family: var(--font-poppins);
   max-width: 1280px;
+  width: 100%;
   margin: 0 auto;
 }
 

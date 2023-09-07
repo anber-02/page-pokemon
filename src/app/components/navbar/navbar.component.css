@@ -6,6 +6,7 @@
   display: flex ;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden;
 }
 
 .title {
@@ -64,7 +65,7 @@
   padding: 1px;
   background-color: rgb(128, 128, 128, 0.2);
 }
-@media (width < 500px){
+@media (width <= 500px){
   .header {
     flex-direction: column;
     padding: 10px 0px;

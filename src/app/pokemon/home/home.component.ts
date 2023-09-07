@@ -23,7 +23,7 @@ export class HomeComponent implements OnInit {
     protected modalService: ModalService
   ) { }
   // datos de los Pokemon's
-  pokemon$ = this.pokemonService.pokemons$;
+  pokemons$ = this.pokemonService.pokemons$;
 
 
   ngOnInit(): void {
@@ -55,6 +55,7 @@ export class HomeComponent implements OnInit {
     if (colorName === null) colorName = 'default'
     const colorMap: { [key: string]: string } = {
       'default': `rgba(0, 0, 0, ${opacity})`,
+      'gray': `rgba(5, 5, 5, ${opacity})`,
       'red': `rgba(255, 0, 0, ${opacity})`,
       'green': `rgba(0, 128, 0, ${opacity})`,
       'blue': `rgba(0, 0, 255, ${opacity})`,
@@ -62,6 +63,8 @@ export class HomeComponent implements OnInit {
       'purple': `rgba(128, 0, 128, ${opacity})`,
       'orange': `rgba(255, 165, 0, ${opacity})`,
       'pink': `rgba(255, 192, 203, ${opacity})`,
+      'brown': `rgba(166, 43, 43, ${opacity})`,
+      // 'white': `rgba(150, 50, 255, .3)`,
       // Agrega más colores según tus necesidades
     };
     // Obtén el valor rgba del mapa o usa un valor predeterminado si no se encuentra

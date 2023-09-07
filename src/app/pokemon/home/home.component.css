@@ -1,5 +1,6 @@
 .main{
   margin: 2px 8px;
+  overflow: hidden;
 }
 .container{
   display: grid;

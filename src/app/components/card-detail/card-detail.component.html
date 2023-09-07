@@ -1,17 +1,21 @@
-<div class="detail__pokemon" >
-  <figure class="pokemon__image">
-    <img src="{{pokemon.pokemon.image}}" />
-  </figure>
-  
-  <span class="pokemon__id">N.º {{pokemon.pokemon.id}}</span>
-  
+<div class="detail__pokemon">
+  <div class="pokemon__image">
+    <div class="background_image" [ngStyle]="{'background-color' : pokemon.species?.color?.name}"></div>
+    <figure class="">
+      <img src="{{pokemon.pokemon.image}}" />
+    </figure>
+  </div>
+
+
   <div class="pokemon__data">
-    <h3 class="">{{pokemon.pokemon.name}}</h3>
+    <span class="pokemon__id">N.º {{pokemon.pokemon.id}}</span>
+    <h3>{{pokemon.pokemon.name}}</h3>
+    <p>{{description}}</p>
     <div class="tag">
       <span *ngFor="let types of pokemon.pokemon.types">
         {{types.type.name}}
       </span>
     </div>
   </div>
-  
+
 </div>
