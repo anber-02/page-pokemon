@@ -19,7 +19,7 @@
       <!-- Info a mostrar en la modal -->
       <app-modal id="{{poke.pokemon.name}}">
         <app-card-detail [pokemon]="poke"></app-card-detail>
-        <button (click)="modalService.close();" style="position: absolute;top: 10px;right: 10px; z-index: 100; background-color: transparent; border: none;" 
+        <button (click)="modalService.close();" class="btn-close" 
         [ngStyle]="{'color' : poke.species?.color?.name }"
         >
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 20 20"><path fill="currentColor" d="M2.93 17.07A10 10 0 1 1 17.07 2.93A10 10 0 0 1 2.93 17.07zM11.4 10l2.83-2.83l-1.41-1.41L10 8.59L7.17 5.76L5.76 7.17L8.59 10l-2.83 2.83l1.41 1.41L10 11.41l2.83 2.83l1.41-1.41L11.41 10z"/></svg>

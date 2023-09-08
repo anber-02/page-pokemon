@@ -2,11 +2,9 @@
   position: relative;
   display: flex;
   width: 100%;
-  min-height: 300px;
-  height: 100%;
-  /* background: linear-gradient(90deg, #00194a 25%, #011a4c 100%); */
+  min-height: 500px;
   background: linear-gradient(90deg, #00194a 25%, #012e86 100%);
-  /* align-items: stretch; */
+  overflow: auto;
 }
 
 .pokemon__image {
@@ -15,8 +13,7 @@
   display: flex;
   justify-content: center;
   width: 50%;
-  min-height: 300px;
-  height: 100%;
+  min-height: 500px;
   align-self: center;
 }
 .background_image {
@@ -60,6 +57,7 @@
   gap: 4px;
 }
 .pokemon__data .tag span {
+  overflow: hidden;
   background-color: rgb(255, 255, 255, 0.3);
   padding: 2px 8px;
   border-radius: 20px;
@@ -71,11 +69,16 @@
 @media (width <= 500px) {
   .detail__pokemon {
     flex-direction: column;
+    height: 100%;
+    padding: 0px 0px 20px 0;
+    min-height: 300px;
   }
   .pokemon__image {
+    min-height: 0;
     width: 100%;
     height: 50%;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-right: none;
   }
   .pokemon__image figure {
     display: flex;
@@ -85,18 +88,23 @@
     width: 100%;
   }
   .pokemon__image img {
-    width: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
   .pokemon__data {
     width: 100%;
     height: 50%;
   }
-  .pokemon__image img {
-    width: 50%;
-    object-fit: contain;
-  }
   .background_image {
     display: none;
+  }
+}
+
+@media screen and (min-width: 501px) and (max-width: 850px) {
+  .detail__pokemon {
+    min-height: 0px;
+    overflow: auto;
+  }
+  .pokemon__image {
+    min-height: 300px;
   }
 }
