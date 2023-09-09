@@ -1,12 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { mergeMap, map, forkJoin, BehaviorSubject, tap, withLatestFrom, switchMap, of } from 'rxjs';
-import { type Pokemon, type Type } from '../types';
+import { mergeMap, map, forkJoin, BehaviorSubject, tap, withLatestFrom, switchMap, of, Observable } from 'rxjs';
+import { PokemonDetail, Pokemon, ApiResponse, Type } from '../interfaces/pokemonDetail';
+import { Name, TypePokemons } from '../interfaces/typesPokemon';
+import { PokemonSpecies } from '../interfaces/pokemonSpecies';
 @Injectable({
   providedIn: 'root'
 })
 export class PokemonService {
+  // Operadores
+  /**
+   * Si deseas procesar todas las emisiones de múltiples observables y combinarlas en un solo flujo, puedes usar mergeMap.
+   * Si deseas cambiar a una nueva observación y descartar observaciones anteriores cuando se emite un nuevo valor, switchMap es la opción adecuada.
+   * cuando se utiliza map, estás transformando los datos de entrada, pero aún mantienes un flujo de observables separado.
+   * switchMap nos permite:Obtener el resultado de this.getDetailsPokemons(pokemons) y usarlo para construir y emitir un nuevo conjunto de observables (speciesObservables).
+   * --Cancelar cualquier observación anterior en caso de que se emita un nuevo valor antes de que se complete la observación actual. Esto es útil cuando se desea evitar la acumulación de observaciones innecesarias.
+   */
   private pokemonsSubject = new BehaviorSubject<any[]>([]);
   pokemons$ = this.pokemonsSubject.asObservable();
 
@@ -14,301 +24,116 @@ export class PokemonService {
     this.getPokemons(0)
   }
 
-  private getPokemons(offset: number): void {
-    this.http.get(`${environment.API_URL}pokemon?limit=20&offset=${offset}`).pipe(
-      mergeMap((res: any) => {
-        const results = res.results;
-        // creamos un arreglo de observables
-        const detallesPokemon = results.map((result: any) => {
-          return this.http.get(result.url);
-        });
-        // con forkJoin esperamos que se resuelvan los observables y une los observables en un solo arreglo
-        return forkJoin(detallesPokemon)
-          .pipe(
-            tap((pokemonData: any) => {
-              //pokemData es un arreglo con todos los datos de cada pokemon
-              const modifiedResults = pokemonData.map((result: Pokemon) => {
-                // result es un pokemon
-                const pokemon = {
-                  ...result,
-                  image: result.sprites?.other?.home.front_default || result.sprites?.front_default,
-                  types: result.types
-                }
-
-                return pokemon
-              })
-              // Aquí almacenamos los resultados de la api
-
-              // Recuperando las especies de cada pokemon
-              const species = pokemonData.map((pokemon: Pokemon) => {
-                return this.http.get(pokemon.species.url)
-              })
-
-              forkJoin(species).pipe(
-                tap((pokemonSpecies: any) => {
-                  const allDataPokemons = modifiedResults.map((pokemon: Pokemon) => {
-                    const species = pokemonSpecies.filter((pokeSpecies: any) => pokeSpecies.id === pokemon.id);
-                    return {
-                      pokemon: pokemon,
-                      species: species[0]
-                    }
-                  })
-                  allDataPokemons.forEach((poke: any) => {
-                    const typesSpanish = poke.pokemon.types.map((type: Type) => {
-                      return this.http.get(type.type.url);
-                    });
-
-                    forkJoin(typesSpanish).subscribe((typeDataArray: any) => {
-                      const modifiedTypes = typeDataArray.map((type: any) => {
-                        const typeInSpanish = type.names.find((entry: any) => entry.language.name === 'es');
-                        return {
-                          type: {
-                            name: typeInSpanish.name
-                          }
-                        };
-                      });
-                      // podemos modificar el objeto iterando ya que javaScript maneja los objetos por referencia
-                      poke.pokemon.types = modifiedTypes;
-                    })
-
-                  })
-
-                  this.pokemonsSubject.next(allDataPokemons)
-                })
-              ).subscribe();
-
-
-            })
-          )
-      })
-    ).subscribe();
-    // nos suscribimos al observable para que se ejecute
-  }
   getPokemonsByLimit(offset: number) {
-    return this.http.get(`${environment.API_URL}pokemon?limit=20&offset=${offset}`).pipe(
-      mergeMap((res: any) => {
-        const results = res.results;
-        const observables = results.map((result: any) => {
-          return this.http.get(result.url);
-        });
-        return forkJoin(observables).pipe(
-          switchMap((pokemonData: any) => {
-            const modifiedResults = pokemonData.map((result: Pokemon) => ({
-              ...result,
-              image: result.sprites?.other?.home.front_default || result.sprites?.front_default,
-              types: result.types
-            }));
-
-            // Recuperando las especies de cada pokemon
-            const species = pokemonData.map((pokemon: Pokemon) => {
-              return this.http.get(pokemon.species.url);
-            });
-
-            return forkJoin(species).pipe(
-              map((pokemonSpecies: any) => {
-                const allDataPokemons = modifiedResults.map((pokemon: Pokemon) => {
-                  const species = pokemonSpecies.find((pokeSpecies: any) => pokeSpecies.id === pokemon.id);
-                  return {
-                    pokemon: pokemon,
-                    species: species
-                  };
-                });
-
-                allDataPokemons.map((poke: any) => {
-                  const typesSpanish = poke.pokemon.types.map((type: Type) => {
-                    return this.http.get(type.type.url);
-                  });
-
-                  forkJoin(typesSpanish).subscribe((typeDataArray: any) => {
-                    const modifiedTypes = typeDataArray.map((type: any) => {
-                      const typeInSpanish = type.names.find((entry: any) => entry.language.name === 'es');
-                      return {
-                        type: {
-                          name: typeInSpanish.name
-                        }
-                      };
-                    });
-                    poke.pokemon.types = modifiedTypes;
-                  })
-                })
-
-                return allDataPokemons;
-              })
-            );
-          })
-        );
-      }),
+    return this.http.get<ApiResponse>(`${environment.API_URL}pokemon?limit=20&offset=${offset}`).pipe(
+      switchMap((res) => this.getData(res.results)),
       withLatestFrom(this.pokemons$),
-      tap(([allDataPokemons, pokemons]) => {
-        // console.log('Pokemons con datos adicionales:', {allDataPokemons, pokemons});
-        // Aquí puedes realizar cualquier acción adicional con los datos resultantes.
-        this.pokemonsSubject.next([...pokemons, ...allDataPokemons,])
+      tap(([morePokemons, pokemons]) => {
+        console.log({ morePokemons, pokemons })
+        this.pokemonsSubject.next([...pokemons, ...morePokemons,])
       })
     ).subscribe();
   }
-
   searchPokemons(name: string) {
-    return this.http.get(`${environment.API_URL}pokemon?limit=10000`).pipe(
-      map((res: any) => {
-        const results = res.results;
-        const pokemonList = results.filter((pokemon: any) => {
+    return this.http.get<ApiResponse>(`${environment.API_URL}pokemon?limit=10000`).pipe(
+      map((res) => {
+        const results: Pokemon[] = res.results;
+        const pokemonList = results.filter((pokemon) => {
           const pokemonName = pokemon.name.toLowerCase();
           return pokemonName.includes(name.toLowerCase());
         });
-        // creamos un arreglo de observables
         return pokemonList
-        // con forkJoin esperamos que se resuelvan los observables y une los observables en un solo arreglo
+      })
+    );
+  }
+  getInfoPokemons(pokemons: Pokemon[]) {
+    this.getData(pokemons).subscribe()
+  }
+  getInfoPokemon(pokemon: any) {
+    this.getDetailPokemon(pokemon.url).pipe(
+      tap((pokemon) => {
+        this.getSpeciesPokemon(pokemon.species.url).pipe(
+          tap((species) => {
+            const data = [{
+              pokemon,
+              species
+            }]
+            this.pokemonsSubject.next(data)
+          })
+        ).subscribe()
+      })
+    ).subscribe()
+  }
+  // recibe una url para obtener las evoluciones
+  getDetailPokemon(url: string) {
+    return this.http.get<PokemonDetail>(url).pipe(
+      switchMap((apiResponse: PokemonDetail) => {
+        const pokemon = apiResponse;
+        pokemon.image = pokemon.sprites.other?.home.front_default || pokemon.sprites.front_default
+
+        const typesSpanishObservables = pokemon.types.map((type: Type) => {
+          return this.http.get<TypePokemons>(type.type.url).pipe(
+            map((typeData) => {
+              const typeInSpanish = typeData.names.find((entry: Name) => entry.language.name === 'es') as Name;
+              return {
+                type: {
+                  name: typeInSpanish.name
+                }
+              };
+            })
+          );
+        });
+
+        return forkJoin(typesSpanishObservables).pipe(
+          map((typesInSpanish: any) => {
+            pokemon.types = typesInSpanish;
+            return pokemon;
+          })
+        );
+      })
+    );
+  }
+  getDetailsPokemons(pokemons: Pokemon[]) {
+    const data = pokemons.map(pokemon => {
+      return this.getDetailPokemon(pokemon.url)
+    })
+    return data
+  }
+  getSpeciesPokemon(url: string) {
+    return this.http.get<PokemonSpecies>(url)
+  }
+  private getData(pokemons: Pokemon[]): Observable<any> {
+    // Combinar los observables dentro de getDetailPokemons usando forkJoin
+    return forkJoin(this.getDetailsPokemons(pokemons)).pipe(
+      switchMap((pokemonData: PokemonDetail[]) => {
+        const speciesObservables = pokemonData.map((pokemon) =>
+          this.getSpeciesPokemon(pokemon.species.url)
+        );
+        // Combinar los observables de species usando forkJoin
+        return forkJoin(speciesObservables).pipe(
+          map((species: PokemonSpecies[]) => {
+            const combinedData = pokemonData.map((pokemon: PokemonDetail) => {
+              const data = species.find(
+                (pokeSpecies) => pokeSpecies.id === pokemon.id
+              );
+              return {
+                pokemon: pokemon,
+                species: data,
+              };
+            });
+            return combinedData;
+          })
+        );
       })
     );
   }
 
-  getInfoPokemons(pokemons: any) {
-    const detallesPokemon = pokemons.map((result: any) => {
-      return this.http.get(result.url);
-    });
-    // con forkJoin esperamos que se resuelvan los observables y une los observables en un solo arreglo
-    return forkJoin(detallesPokemon)
-      .pipe(
-        tap((pokemonData: any) => {
-          //pokemData es un arreglo con todos los datos de cada pokemon
-          const modifiedResults = pokemonData.map((result: Pokemon) => {
-            // result es un pokemon
-            const pokemon = {
-              ...result,
-              image: result.sprites?.other?.home.front_default || result.sprites?.front_default,
-              types: result.types
-            }
-
-            return pokemon
-          })
-          // Aquí almacenamos los resultados de la api
-
-          // Recuperando las especies de cada pokemon
-          const species = pokemonData.map((pokemon: Pokemon) => {
-            return this.http.get(pokemon.species.url)
-          })
-
-          forkJoin(species).pipe(
-            tap((pokemonSpecies: any) => {
-              const allDataPokemons = modifiedResults.map((pokemon: Pokemon) => {
-                const species = pokemonSpecies.filter((pokeSpecies: any) => pokeSpecies.id === pokemon.id);
-                return {
-                  pokemon: pokemon,
-                  species: species[0]
-                }
-              })
-              allDataPokemons.forEach((poke: any) => {
-                const typesSpanish = poke.pokemon.types.map((type: Type) => {
-                  return this.http.get(type.type.url);
-                });
-
-                forkJoin(typesSpanish).subscribe((typeDataArray: any) => {
-                  const modifiedTypes = typeDataArray.map((type: any) => {
-                    const typeInSpanish = type.names.find((entry: any) => entry.language.name === 'es');
-                    return {
-                      type: {
-                        name: typeInSpanish.name
-                      }
-                    };
-                  });
-                  // podemos modificar el objeto iterando ya que javaScript maneja los objetos por referencia
-                  poke.pokemon.types = modifiedTypes;
-                })
-
-              })
-              //informacion de todos los pokemones encontrados en el buscador
-              this.pokemonsSubject.next(allDataPokemons)
-            })
-          ).subscribe()
-        })
-      ).subscribe();
-  }
-
-  getInfoPokemon(pokemon: any) {
-    this.http.get(`${pokemon.url}`)
-      .pipe(
-        tap((pokemonData: any) => {
-          //pokemData es un arreglo con todos los datos de cada pokemon
-          // result es un pokemon
-          const pokemon = {
-            ...pokemonData,
-            image: pokemonData.sprites?.other?.home.front_default || pokemonData.sprites?.front_default,
-            types: pokemonData.types
-          }
-          // Aquí almacenamos los resultados de la api
-
-          // Recuperando las especies de cada pokemon
-          this.http.get(pokemon.species.url).pipe(
-            tap((pokemonSpecies: any) => {
-              const allDataPokemons = [{
-                pokemon: pokemon,
-                species: pokemonSpecies
-              }]
-              allDataPokemons.forEach((poke: any) => {
-                const typesSpanish = poke.pokemon.types.map((type: Type) => {
-                  return this.http.get(type.type.url);
-                });
-
-                forkJoin(typesSpanish).subscribe((typeDataArray: any) => {
-                  const modifiedTypes = typeDataArray.map((type: any) => {
-                    const typeInSpanish = type.names.find((entry: any) => entry.language.name === 'es');
-                    return {
-                      type: {
-                        name: typeInSpanish.name
-                      }
-                    };
-                  });
-                  // podemos modificar el objeto iterando ya que javaScript maneja los objetos por referencia
-                  poke.pokemon.types = modifiedTypes;
-                })
-
-              })
-              //informacion de todos los pokemones encontrados en el buscador
-              this.pokemonsSubject.next(allDataPokemons)
-            })
-          ).subscribe()
-        })
-      ).subscribe();
-  }
-
-  // recibe una url para obtener las evoluciones
-  getEvolutionPokemons(url:any){
-    return this.http.get(url).pipe(
-      mergeMap((evolutionChain: any) => {
-        // Recorrer la cadena de evolución y obtener detalles de cada etapa
-        const evolutionStages:any = [];
-        let currentEvol = evolutionChain.chain;
-
-        while (currentEvol) {
-          evolutionStages.push({
-            name: currentEvol.species.name,
-            trigger: currentEvol.evolution_details[0]?.trigger?.name,
-          });
-          currentEvol = currentEvol.evolves_to[0]; // Siguiente etapa de evolución
-        }
-
-        // Obtener detalles de cada etapa de evolución
-        const evolutionRequests = evolutionStages.map((stage:any) => {
-          return this.http.get(`https://pokeapi.co/api/v2/pokemon/${stage.name}`);
-        });
-
-        // Usar forkJoin para obtener detalles de todas las etapas de evolución
-        return forkJoin(evolutionRequests).pipe(
-          // Mapear los resultados en un objeto con la información del Pokémon y sus evoluciones
-          switchMap((evolutionPokemonData: any) => {
-            const result = {
-              // pokemon:pokemonData => es la variable que contiene los detalles de cada pokemon
-              evolutions: evolutionStages.map((stage:any, index:any) => ({
-                name: stage.name,
-                trigger: stage.trigger,
-                details: evolutionPokemonData[index],
-              })),
-            };
-            return of(result);
-          })
-        );
+  private getPokemons(offset: number): void {
+    this.http.get<ApiResponse>(`${environment.API_URL}pokemon?limit=20&offset=${offset}`).pipe(
+      tap((apiResponse) => {
+        this.getData(apiResponse.results).subscribe(res => this.pokemonsSubject.next(res))
       })
-    )
+    ).subscribe();
   }
 
 }
