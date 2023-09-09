@@ -29,7 +29,6 @@ export class PokemonService {
       switchMap((res) => this.getData(res.results)),
       withLatestFrom(this.pokemons$),
       tap(([morePokemons, pokemons]) => {
-        console.log({ morePokemons, pokemons })
         this.pokemonsSubject.next([...pokemons, ...morePokemons,])
       })
     ).subscribe();
@@ -135,5 +134,44 @@ export class PokemonService {
       })
     ).subscribe();
   }
+
+  // getEvolutionPokemons(url: any) {
+  //   return this.http.get(url).pipe(
+  //     mergeMap((evolutionChain: any) => {
+  //       // Recorrer la cadena de evolución y obtener detalles de cada etapa
+  //       const evolutionStages: any = [];
+  //       let currentEvol = evolutionChain.chain;
+
+  //       while (currentEvol) {
+  //         evolutionStages.push({
+  //           name: currentEvol.species.name,
+  //           trigger: currentEvol.evolution_details[0]?.trigger?.name,
+  //         });
+  //         currentEvol = currentEvol.evolves_to[0]; // Siguiente etapa de evolución
+  //       }
+
+  //       // Obtener detalles de cada etapa de evolución
+  //       const evolutionRequests = evolutionStages.map((stage: any) => {
+  //         return this.http.get(`https://pokeapi.co/api/v2/pokemon/${stage.name}`);
+  //       });
+
+  //       // Usar forkJoin para obtener detalles de todas las etapas de evolución
+  //       return forkJoin(evolutionRequests).pipe(
+  //         // Mapear los resultados en un objeto con la información del Pokémon y sus evoluciones
+  //         switchMap((evolutionPokemonData: any) => {
+  //           const result = {
+  //             // pokemon:pokemonData => es la variable que contiene los detalles de cada pokemon
+  //             evolutions: evolutionStages.map((stage: any, index: any) => ({
+  //               name: stage.name,
+  //               trigger: stage.trigger,
+  //               details: evolutionPokemonData[index],
+  //             })),
+  //           };
+  //           return of(result);
+  //         })
+  //       );
+  //     })
+  //   )
+  // }
 
 }

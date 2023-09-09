@@ -13,8 +13,8 @@ export class CardDetailComponent implements OnInit {
   }
   
   ngOnInit(): void {
-    let data = this.pokemon.species.flavor_text_entries.find((entry: any) => entry.language.name === 'es');
-    this.description = data.flavor_text
+    let data = this.pokemon.species?.flavor_text_entries.find((entry: any) => entry.language.name === 'es');
+    this.description = data?.flavor_text
   }
 
 }
