@@ -41,7 +41,7 @@
   flex-direction: column;
   justify-content: center;
   width: 50%;
-  gap:8px;
+  gap:12px;
   color: white;
 }
 .pokemon__id {

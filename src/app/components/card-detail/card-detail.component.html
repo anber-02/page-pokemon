@@ -8,13 +8,29 @@
 
 
   <div class="pokemon__data">
-    <span class="pokemon__id">N.º {{pokemon.pokemon.id}}</span>
-    <h3>{{pokemon.pokemon.name}}</h3>
+    <div>
+      <span class="pokemon__id">N.º {{pokemon.pokemon.id}}</span>
+      <h3>{{pokemon.pokemon.name}}</h3>
+      <div class="tag">
+        <span *ngFor="let types of pokemon.pokemon.types">
+          {{types.type.name}}
+        </span>
+      </div>
+    </div>
     <p>{{description}}</p>
-    <div class="tag">
-      <span *ngFor="let types of pokemon.pokemon.types">
-        {{types.type.name}}
-      </span>
+    <div>
+      <p [ngStyle]="{'color' : pokemon.species?.color?.name}" style="font-weight: 600;letter-spacing: 1px;">Evoluciones</p>
+      <div style="display: flex; gap: 10px; width: 100%; justify-content: center;">
+        <div *ngFor="let evolution of evolutions" style="display: flex;flex-direction: column; justify-content: center; align-items: center;">
+          <figure style="width: 90px; border-radius: 100%; background-color: rgba(255,255,255,.3); padding: 10px;">
+
+            <img style="width: 100%;object-fit: contain;"
+              src="{{evolution.details.sprites.other?.home.front_default || evolution.details.sprites.front_default}}" />
+          </figure>
+          <small style="font-size: 12px;">N.º {{evolution.details.id}}</small>
+          <p style="text-transform: capitalize; font-weight: 300;">{{evolution.name}}</p>
+        </div>
+      </div>
     </div>
   </div>
 
