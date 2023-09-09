@@ -47,7 +47,7 @@ export class PokemonService {
     );
   }
   getInfoPokemons(pokemons: Pokemon[]) {
-    this.getData(pokemons).subscribe()
+    this.getData(pokemons).subscribe(res => this.pokemonsSubject.next(res))
   }
   getInfoPokemon(pokemon: any) {
     this.getDetailPokemon(pokemon.url).pipe(
