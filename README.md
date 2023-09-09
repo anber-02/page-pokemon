@@ -1,4 +1,7 @@
-# Examen2
+# Page Pokemon
+# Esta pagina es solo para ver pokemones y buscar pokemones
+# Cuenta con un scroll infinito para cargar mas pokemones
+# Todo esto es obtenido gracias a la pokeapi que es la api donde obtenmos los pokemones
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.2.2.
 
